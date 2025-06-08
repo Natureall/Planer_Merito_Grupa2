@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Rejestracja - WSB</title>
+    <style>
+        body {font-family: Roboto, sans-serif;background-color: #f5f8fa;display: flex;align-items: center;justify-content: center;height: 100vh;}
+        .container {background-color: white;padding: 20px;border-radius: 10px;box-shadow: 0 4px 8px rgba(0,0,0,0.1);width: 350px;text-align: center;}
+        input {width: 100%;padding: 10px;margin: 5px 0;border-radius: 6px;border: 1px solid #ccc;}
+        button {width: 100%;padding: 10px;margin-top: 10px;background-color: #0056b3;color: white;border-radius: 6px;border: none;cursor: pointer;}
+        button:hover {background-color: #004494;}
+    </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-…TWÓJ_HASH…" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<style>
+.social-fixed {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 15px;
+  z-index: 1000;
+}
+.social-fixed a {
+  font-size: 1.5rem;
+  color: #333;
+  transition: color .2s;
+}
+.social-fixed a:hover {
+  color: #E1306C;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>Rejestracja</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Adres e-mail" required>
+            <input type="password" name="password" placeholder="Hasło" required>
+            <input type="password" name="confirm_password" placeholder="Powtórz hasło" required>
+            <button type="submit">Zarejestruj się</button>
+        </form>
+        {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+        <p>Masz już konto? <a href="{% url 'login' %}">Zaloguj się</a></p>
+    </div>
+
+<div class="social-fixed">
+  <a href="https://www.instagram.com/accounts/login/" target="_blank" aria-label="Instagram">
+    <i class="fab fa-instagram"></i>
+  </a>
+  <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook">
+    <i class="fab fa-facebook-f"></i>
+  </a>
+  <a href="https://www.youtube.com/" target="_blank" aria-label="YouTube">
+    <i class="fab fa-youtube"></i>
+  </a>
+</div>
+</body>
+</html>

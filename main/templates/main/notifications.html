@@ -1,0 +1,10 @@
+<h2>Powiadomienia</h2>
+{% if notifications %}
+  <ul>
+    {% for notif in notifications %}
+      <li>{{ notif.message }} <small>({{ notif.created_at|date:'SHORT_DATETIME_FORMAT' }})</small></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Brak powiadomień.</p>
+{% endif %}

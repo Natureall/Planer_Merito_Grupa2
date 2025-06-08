@@ -1,0 +1,4 @@
+django
+pywebview
+
+django-jazzmin

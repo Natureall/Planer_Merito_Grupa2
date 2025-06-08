@@ -1,0 +1,28 @@
+
+{% load static %}
+{% block content %}
+<div id="calendar" style="min-height: 600px; margin: 40px auto; background: #fff; border: 2px solid #007bff; border-radius: 8px;"></div>
+<link href="{% static 'main/fullcalendar/main.min.css' %}" rel="stylesheet">
+<script src="{% static 'main/fullcalendar/index.global.min.js' %}"></script>
+<script src="{% static 'main/fullcalendar/locales/pl.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'pl',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
+      events: [
+        { title: 'Zajęcia z matematyki', start: '2025-04-01', color: '#3788d8' },
+        { title: 'Sprawdzian z informatyki', start: '2025-04-08', color: '#d85151' },
+        { title: 'Projekt zespołowy', start: '2025-04-24', end: '2025-04-28', color: '#2e8b57' }
+      ]
+    });
+    calendar.render();
+  });
+</script>
+{% endblock %}

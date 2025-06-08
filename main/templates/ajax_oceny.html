@@ -1,0 +1,24 @@
+
+<h2>Twoje oceny</h2>
+<table style="width:100%; border-collapse: collapse; background:white; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+    <thead>
+        <tr style="background-color:#005bbb; color:white;">
+            <th style="padding:10px;">Przedmiot</th>
+            <th style="padding:10px;">Ocena</th>
+            <th style="padding:10px;">Data</th>
+            <th style="padding:10px;">Komentarz</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ocena in oceny %}
+        <tr style="text-align:center; border-top: 1px solid #ddd;">
+            <td style="padding:10px;">{{ ocena.przedmiot }}</td>
+            <td style="padding:10px;">{{ ocena.wartosc }}</td>
+            <td style="padding:10px;">{{ ocena.data }}</td>
+            <td style="padding:10px;">{{ ocena.komentarz|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="padding:15px;">Brak ocen do wyświetlenia.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

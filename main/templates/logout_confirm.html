@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Potwierdzenie wylogowania</title>
+    <style>
+        body { font-family: Roboto, sans-serif; background-color: #f5f8fa; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); text-align: center; width: 300px; }
+        h2 { margin-bottom: 20px; }
+        .btn { display: inline-block; padding: 10px 20px; margin: 5px; border-radius: 6px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+        .btn-confirm { background-color: #d9534f; color: white; }
+        .btn-cancel { background-color: #5bc0de; color: white; }
+    </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-…TWÓJ_HASH…" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<style>
+.social-fixed {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 15px;
+  z-index: 1000;
+}
+.social-fixed a {
+  font-size: 1.5rem;
+  color: #333;
+  transition: color .2s;
+}
+.social-fixed a:hover {
+  color: #E1306C;
+}
+</style>
+</head>
+<body>
+    <div class="box">
+        <h2>Czy na pewno chcesz się wylogować?</h2>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-confirm">Tak – wyloguj mnie</button>
+        </form>
+        <a class="btn btn-cancel" href="{% url 'panel_studenta' %}">Anuluj</a>
+    </div>
+
+<div class="social-fixed">
+  <a href="https://www.instagram.com/accounts/login/" target="_blank" aria-label="Instagram">
+    <i class="fab fa-instagram"></i>
+  </a>
+  <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook">
+    <i class="fab fa-facebook-f"></i>
+  </a>
+  <a href="https://www.youtube.com/" target="_blank" aria-label="YouTube">
+    <i class="fab fa-youtube"></i>
+  </a>
+</div>
+</body>
+</html>

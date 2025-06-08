@@ -1,0 +1,157 @@
+<style>
+    .profile-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        background-color: #f0f2f5;
+    }
+    .profile-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        width: 100%;
+        max-width: 800px;
+        font-family: 'Segoe UI', sans-serif;
+        display: flex;
+        gap: 30px;
+    }
+    .profile-left {
+        flex: 1;
+    }
+    .profile-right {
+        width: 180px;
+        text-align: center;
+    }
+    .profile-right img {
+        width: 100%;
+        max-width: 150px;
+        aspect-ratio: 1 / 1;
+        border-radius: 12px;
+        object-fit: cover;
+        margin-bottom: 12px;
+        box-shadow: 0 0 6px rgba(0,0,0,0.08);
+    }
+    .profile-card h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+    .profile-group {
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+    .profile-group label {
+        font-weight: 500;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: #333;
+    }
+    .profile-group input,
+    .profile-group select {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 13px;
+    }
+    .profile-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 6px;
+    }
+    .profile-actions {
+        margin-top: 18px;
+    }
+    .profile-actions button {
+        background-color: #2563eb;
+        color: white;
+        font-weight: 600;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+    }
+    .profile-actions button:hover {
+        background-color: #1d4ed8;
+    }
+</style>
+
+<div class="profile-wrapper">
+    <div class="profile-card">
+        <div class="profile-left">
+            <h2>Twój Profil</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="profile-group">
+                    <label>Email:</label>
+                    <input type="email" value="{{ user.email }}" readonly>
+                </div>
+
+                <div class="profile-group">
+                    <label>Imię:</label>
+                    <input type="text" name="first_name" value="{{ user.first_name }}">
+                </div>
+
+                <div class="profile-group">
+                    <label>Nazwisko:</label>
+                    <input type="text" name="last_name" value="{{ user.last_name }}">
+                </div>
+
+                <div class="profile-group">
+                    <label>Nowe hasło:</label>
+                    <input type="password" name="password1">
+                </div>
+
+                <div class="profile-group">
+                    <label>Potwierdź hasło:</label>
+                    <input type="password" name="password2">
+                </div>
+
+                <div class="profile-group">
+                    <label>Numer indeksu:</label>
+                    <input type="text" name="index_number" value="{{ profile.index_number }}">
+                </div>
+
+                <div class="profile-group">
+                    <label>Kierunek studiów:</label>
+                    <input type="text" name="field_of_study" value="{{ profile.field_of_study }}">
+                </div>
+
+                <div class="profile-group">
+                    <label>Status:</label>
+                    <select name="status">
+                        <option value="student" {% if profile.status == 'student' %}selected{% endif %}>Student</option>
+                        <option value="absolwent" {% if profile.status == 'absolwent' %}selected{% endif %}>Absolwent</option>
+                        <option value="prowadzacy" {% if profile.status == 'prowadzacy' %}selected{% endif %}>Prowadzący</option>
+                    </select>
+                </div>
+
+                <div class="profile-group checkbox-group">
+                    <label><input type="checkbox" name="is_public" {% if profile.is_public %}checked{% endif %}> Profil publiczny</label>
+                </div>
+
+                <div class="profile-group">
+                    <label>Dokument (PDF/JPG):</label>
+                    <input type="file" name="document">
+                </div>
+
+                <div class="profile-actions">
+                    <button type="submit">Zapisz zmiany</button>
+                </div>
+
+                {% if message %}<p style="color:green;">{{ message }}</p>{% endif %}
+                {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+            </form>
+        </div>
+        <div class="profile-right">
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Zdjęcie profilowe">
+            {% endif %}
+            <label style="font-size: 13px; font-weight: 500;">Zmień zdjęcie:</label>
+            <input type="file" name="profile_picture" style="font-size: 12px; margin-top: 6px;">
+        </div>
+    </div>
+</div>

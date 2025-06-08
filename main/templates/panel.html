@@ -1,0 +1,264 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    <meta charset="UTF-8">
+    <title>Panel Studenta WSB</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f7fa; }
+        .top-bar {
+            background-color: #005bbb; color: white; padding: 10px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .top-bar .right-buttons a {
+            color: white; text-decoration: none; margin-left: 20px; font-weight: 500;
+        }
+        .sidebar {
+            width: 200px; background-color: white; padding-top: 30px;
+            position: fixed; height: 100vh; box-shadow: 1px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar a {
+            display: block; padding: 15px 20px; color: #005bbb;
+            font-weight: 600; text-decoration: none;
+        }
+        .sidebar a:hover { background-color: #e6f0ff; }
+        .content { margin-left: 200px; padding: 40px; }
+        #calendar {
+            max-width: 90%; margin: 0 auto; background: white;
+            padding: 20px; border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    
+        .logo-link {
+            color: white;
+            text-decoration: none;
+        }
+        .logo-link:hover {
+            opacity: 0.8;
+        }
+    </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-…TWÓJ_HASH…" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<style>
+.social-fixed {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 15px;
+  z-index: 1000;
+}
+.social-fixed a {
+  font-size: 1.5rem;
+  color: #333;
+  transition: color .2s;
+}
+.social-fixed a:hover {
+  color: #E1306C;
+}
+</style>
+</head>
+<body>
+    <div class="top-bar">
+            <div><a href="{% url 'panel_studenta' %}" class="logo-link"><strong>Panel Studenta WSB</strong></a></div>
+        <div class="right-buttons">
+            <a href="#" id="btn-profile">Profil</a>
+            <a href="#" id="btn-notifications">Powiadomienia</a>
+            <a href="/logout/">Wyloguj</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <a href="#" id="btn-kalendarz">Kalendarz</a>
+        <a href="#" id="btn-oceny">Oceny</a>
+        <a href="#" id="btn-kontakt">Kontakt</a>
+    </div>
+
+    <div class="content" id="content">
+        <h1>Panel studenta WSB</h1>
+        <p>Wybierz jedną z opcji w menu, aby kontynuować.</p>
+        
+        <h2 class="aktualnosci-label">AKTUALNOŚCI</h2>
+
+          
+    {% if admin_messages %}
+    <div class="admin-messages">
+      {% for msg in admin_messages %}
+      <div class="admin-message">
+        <h3>{{ msg.title }}</h3>
+        <p>{{ msg.content|linebreaks }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    </div>
+
+  
+    
+
+<div id="notatkaModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
+     background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2); z-index:9999;">
+    <h3 id="modal-title">Nowa notatka</h3>
+    <input type="hidden" id="notatka-id">
+    <label>Tytuł:</label><br>
+    <input type="text" id="notatka-tytul" style="width:100%; margin-bottom:10px;"><br>
+    <label>Data:</label><br>
+    <input type="date" id="notatka-data" style="width:100%; margin-bottom:10px;"><br>
+    <label>Opis:</label><br>
+    <textarea id="notatka-opis" style="width:100%; margin-bottom:10px;"></textarea><br>
+    <label>Kolor:</label><br>
+    <input type="color" id="notatka-kolor" value="#3788d8"><br><br>
+    <button onclick="zapiszNotatke()">Zapisz</button>
+    <button onclick="usunNotatke()" id="btn-usun" style="display:none; margin-left:10px;">Usuń</button>
+    <button onclick="zamknijModal()" style="float:right;">Anuluj</button>
+</div>
+
+<script>
+    var calendar;
+
+    function inicjalizujKalendarz() {
+        var calendarEl = document.getElementById('calendar');
+        if (calendarEl) {
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'pl',
+                height: "auto",
+                dateClick: function(info) {
+                    otworzModal(null, info.dateStr);
+                },
+                eventClick: function(info) {
+                    const event = info.event;
+                    otworzModal({
+                        id: event.id,
+                        tytul: event.title,
+                        data: event.startStr,
+                        kolor: event.backgroundColor,
+                    });
+                },
+                events: '/ajax/notatki/'
+            });
+            calendar.render();
+        }
+    }
+
+    function otworzModal(dane, dataKliknieta=null) {
+        $('#notatka-id').val(dane ? dane.id : '');
+        $('#notatka-tytul').val(dane ? dane.tytul : '');
+        $('#notatka-data').val(dane ? dane.data : dataKliknieta || '');
+        $('#notatka-opis').val(dane ? dane.opis || '' : '');
+        $('#notatka-kolor').val(dane ? dane.kolor : '#3788d8');
+        $('#btn-usun').toggle(!!dane);
+        $('#modal-title').text(dane ? 'Edytuj notatkę' : 'Nowa notatka');
+        $('#notatkaModal').fadeIn();
+    }
+
+    function zamknijModal() {
+        $('#notatkaModal').fadeOut();
+    }
+
+    function zapiszNotatke() {
+        const id = $('#notatka-id').val();
+        const dane = {
+            tytul: $('#notatka-tytul').val(),
+            data: $('#notatka-data').val(),
+            opis: $('#notatka-opis').val(),
+            kolor: $('#notatka-kolor').val()
+        };
+        const url = id ? `/ajax/edytuj_notatke/${id}/` : '/ajax/notatka/dodaj/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: JSON.stringify(dane),
+            contentType: 'application/json',
+            success: function() {
+                calendar.refetchEvents();
+                zamknijModal();
+            },
+            error: function() {
+                alert('Błąd zapisu notatki.');
+            }
+        });
+    }
+
+    function usunNotatke() {
+        const id = $('#notatka-id').val();
+        if (!confirm('Na pewno usunąć notatkę?')) return;
+        $.ajax({
+            url: `/ajax/usun_notatke/${id}/`,
+            type: 'POST',
+            success: function() {
+                calendar.refetchEvents();
+                zamknijModal();
+            },
+            error: function() {
+                alert('Błąd usuwania.');
+            }
+        });
+    }
+</script>
+
+<script>
+    $(function() {
+        $(document).on('click', '#btn-kalendarz', function() {
+            $.ajax({
+                url: '/ajax/kalendarz/html/',
+                type: 'GET',
+                success: function(response){
+                    $('#content').html(response);
+                    inicjalizujKalendarz();
+                },
+                error: function(){
+                    alert('Błąd ładowania kalendarza.');
+                }
+            });
+        });
+
+        $(document).on('click', '#btn-oceny', function() {
+            $('#content').html('<h2>Oceny</h2><p>Moduł ocen w przygotowaniu.</p>');
+        });
+
+        $(document).on('click', '#btn-kontakt', function() {
+            $('#content').html('<h2>Kontakt</h2><p>Kontakt: <a href=\"mailto:kontakt@wsb.edu.pl\">kontakt@wsb.edu.pl</a></p>');
+        });
+    });
+</script>
+
+<script>
+    $(function() {
+        $(document).on('click', '#btn-oceny', function() {
+            $.ajax({
+                url: '/ajax/oceny/',  
+                type: 'GET',
+                success: function(response) {
+                    $('#content').html(response);  
+                },
+                error: function() {
+                    alert('Błąd ładowania ocen.');
+                }
+            });
+        });
+    });
+</script>
+{% load static %}
+<script src="{% static 'main/js/kontakt.js' %}"></script>
+<script src="{% static 'main/js/notifications.js' %}"></script>
+    <script src="{% static 'main/js/notifications.js' %}"></script>
+    <script src="{% static 'main/js/profile.js' %}"></script>
+
+<div class="social-fixed">
+  <a href="https://www.instagram.com/accounts/login/" target="_blank" aria-label="Instagram">
+    <i class="fab fa-instagram"></i>
+  </a>
+  <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook">
+    <i class="fab fa-facebook-f"></i>
+  </a>
+  <a href="https://www.youtube.com/" target="_blank" aria-label="YouTube">
+    <i class="fab fa-youtube"></i>
+  </a>
+</div>
+</body>
+</html>
